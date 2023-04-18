@@ -2,10 +2,10 @@
 """test for place"""
 import unittest
 import os
+from os import getenv
 from models.place import Place
 from models.base_model import BaseModel
 import pep8
-from os import getenv
 
 
 class TestPlace(unittest.TestCase):
@@ -84,18 +84,9 @@ class TestPlace(unittest.TestCase):
         self.assertEqual(type(self.place.longitude), float)
         self.assertEqual(type(self.place.amenity_ids), list)
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db",
-                     "Using DB")
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == 'db', 'DB')
     def test_save_Place(self):
         """test if the save works"""
-        self.place.save()
-        self.assertNotEqual(self.place.created_at, self.place.updated_at)
-
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != "db",
-                     "NOT Using DB")
-    def test_save_Place_db(self):
-        """test if the save works DB"""
-        return True
         self.place.save()
         self.assertNotEqual(self.place.created_at, self.place.updated_at)
 

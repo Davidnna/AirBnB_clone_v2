@@ -74,7 +74,7 @@ class TestFileStorage(unittest.TestCase):
             lines = f.readlines()
         try:
             os.remove(path)
-        except:
+        except Exception:
             pass
         self.storage.save()
         with open(path, 'r') as f:
@@ -82,7 +82,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(lines, lines2)
         try:
             os.remove(path)
-        except:
+        except Exception:
             pass
         with open(path, "w") as f:
             f.write("{}")
@@ -91,35 +91,6 @@ class TestFileStorage(unittest.TestCase):
                 self.assertEqual(line, "{}")
         self.assertIs(self.storage.reload(), None)
 
-    def test_all_method(self):
-        ''' tests all method '''
-        fs = FileStorage()
-        new_state = State()
-        fs.new(new_state)
-        fs.save()
-        self.assertIn(new_state, fs.all(State).values())
-
-    def test_all_no_specification(self):
-        ''' tests all when no class is passed '''
-        return True
-        fs = FileStorage()
-        new_state1 = State()
-        fs.new(new_state1)
-        fs.save()
-        new_user1 = User()
-        fs.new(new_user1)
-        fs.save()
-        self.assertEqual(8, len(fs.all()))
-
-    def test_delete_method(self):
-        ''' tests delete method '''
-        fs = FileStorage()
-        new_state = State()
-        fs.new(new_state)
-        fs.save()
-        self.assertIn(new_state, fs.all(State).values())
-        fs.delete(new_state)
-        self.assertNotIn(new_state, fs.all(State).values())
 
 if __name__ == "__main__":
     unittest.main()

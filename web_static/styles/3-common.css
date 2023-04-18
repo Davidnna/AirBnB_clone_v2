@@ -1,4 +1,9 @@
-body {
+/*
+ * === Global style ===
+ */
+
+/* Global style */
+body{
     margin: 0;
     padding: 0;
     color: #484848;
