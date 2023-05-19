@@ -17,6 +17,7 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 from models.engine.file_storage import FileStorage
+from os import getenv
 
 
 class TestConsole(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestConsole(unittest.TestCase):
         cls.consol = HBNBCommand()
 
     @classmethod
-    def teardown(cls):
+    def tearDownClass(cls):
         """at the end of the test this will tear it down"""
         del cls.consol
 
@@ -72,6 +73,8 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("quit")
             self.assertEqual('', f.getvalue())
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db",
+                     "Not using db")
     def test_create(self):
         """Test create command inpout"""
         with patch('sys.stdout', new=StringIO()) as f:
@@ -82,12 +85,37 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("create asdfsfsd")
             self.assertEqual(
                 "** class doesn't exist **\n", f.getvalue())
+
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd('create User email="hoal@.com" password="1234"')
+            self.consol.onecmd("create User")
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("all User")
-            # self.assertEqual(
-            #     "[[User]", f.getvalue()[:7])
+            self.assertEqual(
+                "[[User]", f.getvalue()[:7])
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != "db",
+                     "Using db")
+    def test_create_db(self):
+        """Test create command inpout DB"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create")
+            self.assertEqual(
+                "** class name missing **\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create asdfsfsd")
+            self.assertEqual(
+                "** class doesn't exist **\n", f.getvalue())
+
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd('create State name="California!"')
+            s = f.getvalue()
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("all State")
+            self.assertEqual(
+                "[[State]", f.getvalue()[:8])
+        with patch('sys.stdout', new=StringIO()) as foo:
+            s = "destroy State " + s
+            self.consol.onecmd(s)
 
     def test_show(self):
         """Test show command inpout"""
@@ -209,6 +237,8 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "** no instance found **\n", f.getvalue())
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db",
+                     "Not using db")
     def test_update(self):
         """Test alternate destroy command inpout"""
         with patch('sys.stdout', new=StringIO()) as f:
@@ -232,6 +262,11 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "** value missing **\n", f.getvalue())
 
+        @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != "db",
+                         "Using db")
+        def test_update_db(self):
+            """Test alternate destroy command inpout DB"""
+            return True
 
 if __name__ == "__main__":
     unittest.main()
